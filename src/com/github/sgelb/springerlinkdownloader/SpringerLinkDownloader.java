@@ -10,39 +10,37 @@
  ******************************************************************************/
 package com.github.sgelb.springerlinkdownloader;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
+
+import javax.swing.SwingUtilities;
 
 import com.itextpdf.text.DocumentException;
 
 public class SpringerLinkDownloader {
 
-	public static SpringerLinkDownloader sl = new SpringerLinkDownloader();
-	private String version = "20130513";
-
-	public void run() {
+	public void runCLI() {
 
 		// url to book
 		// http://link.springer.com/book/${doi}/[page/1]
 		// doi = ${prefix}/${onlineISBN}
 		// /page/1 is optional
-		// String url = "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
-		
-		String url = Clipboard.getUrlfromClipboard(); 
+		// String url =
+		// "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
+
+		String url = Clipboard.getUrlfromClipboard();
 		File saveFolder = new File(System.getProperty("user.home"));
 		boolean delTmpPdfs = true;
 
 		// begin menu
-		
-		System.out.println("SpringerLink Downloader (v" + version + ")");
+
+		System.out.println("SpringerLink Downloader");
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Enter url:");
 		if (url != null) {
 			System.out.print("[" + url + "]\n> ");
-		}
-		else {
+		} else {
 			System.out.print("> ");
 		}
 		String tmp = scanner.nextLine().trim();
@@ -58,9 +56,9 @@ public class SpringerLinkDownloader {
 			delTmpPdfs = false;
 		}
 		scanner.close();
-		
+
 		// end menu
-		
+
 		Book book = new Book();
 		Parser parsePage = new Parser(url, book);
 		parsePage.run();
@@ -74,8 +72,20 @@ public class SpringerLinkDownloader {
 		}
 	}
 
+	public void runGUI() {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				Gui gb = new Gui();
+				gb.run();
+			}
+		});
+	}
+
 	public static void main(String[] args) {
-		sl.run();
+		SpringerLinkDownloader sl = new SpringerLinkDownloader();
+		//sl.runCLI();
+		sl.runGUI();
 	}
 
 }
