@@ -56,7 +56,7 @@ public class Parser {
 			System.exit(-1);
 		}
 
-		if (doc.getElementsByClass("access-link") != null) {
+		if (!doc.getElementsByClass("access-link").isEmpty()) {
 			System.out
 					.println("You have no access to this book. Are you connecting from the right network?");
 			System.exit(-1);

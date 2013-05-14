@@ -101,7 +101,7 @@ public class Pdf {
 		int n;
 		ArrayList<HashMap<String, Object>> bookmarks = new ArrayList<HashMap<String, Object>>();
 		List<HashMap<String, Object>> tmp;
-
+		
 		count = 1;
 		System.out.println("Start mergin…");
 		for (File srcPdf : src) {
@@ -111,7 +111,7 @@ public class Pdf {
 
 			tmp = SimpleBookmark.getBookmark(reader);
 			SimpleBookmark.shiftPageNumbers(tmp, page_offset, null);
-			bookmarks.addAll(tmp);
+			if (tmp != null) bookmarks.addAll(tmp);
 
 			n = reader.getNumberOfPages();
 			page_offset += n;

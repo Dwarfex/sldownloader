@@ -28,7 +28,9 @@ public class SpringerLinkDownloader {
 		// http://link.springer.com/book/${doi}/[page/1]
 		// doi = ${prefix}/${onlineISBN}
 		// /page/1 is optional
-		// String url = "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
+		
+		// Pattern kompakt.
+		// String url = "http://link.springer.com/book/10.1007/978-3-8274-2526-3/page/1";
 		
 		String url = Clipboard.getUrlfromClipboard(); 
 		File saveFolder = new File(System.getProperty("user.home"));
