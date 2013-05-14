@@ -13,7 +13,10 @@ package com.github.sgelb.springerlinkdownloader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +32,8 @@ public class Parser {
 	private Book book;
 	private Document doc = null;
 	private TreeMap<String, URL> chapters = new TreeMap<>();
+	private final static Logger LOGGER = Logger.getLogger(Parser.class
+			.getName());
 
 	public Parser(String url, Book book) {
 		System.setProperty("java.net.useSystemProxies", "true");
@@ -47,16 +52,16 @@ public class Parser {
 		try {
 			doc = Jsoup.connect(url).timeout(5000).get();
 		} catch (HttpStatusException e) {
-			System.out.println("Error: " + e.getStatusCode());
+			LOGGER.log(Level.SEVERE, "HttpStatusException", e);
 			System.exit(-1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "IOException", e);
 			System.exit(-1);
 		}
 
 		if (!doc.getElementsByClass("access-link").isEmpty()) {
-			System.out
-					.println("You have no access to this book. Are you connecting from the right network?");
+			LOGGER.log(Level.SEVERE,
+					"You have no access to this book. Are you connecting from the right network?");
 			System.exit(-1);
 		}
 
@@ -74,27 +79,35 @@ public class Parser {
 			try {
 				doc = Jsoup.connect(url).timeout(5000).get();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "IOException", e);
+				System.exit(-1);
 			}
 			chapters.putAll(getChapters(chapters));
 		}
 	}
 
 	public void setBookData() {
+		HashMap<String, String> infos = new HashMap<>();
 		Element summary = doc.getElementsByClass("summary").first();
-		book.setTitle(summary.getElementById("abstract-about-title").text());
-		book.setSubtitle(summary.getElementById("abstract-about-book-subtitle")
+		infos.put("title", summary.getElementById("abstract-about-title")
 				.text());
-		book.setYear(summary.getElementById(
-				"abstract-about-book-chapter-copyright-year").text());
-		book.setDoi(summary.getElementById("abstract-about-book-chapter-doi")
-				.text());
-		book.setPrintIsbn(summary.getElementById(
-				"abstract-about-book-print-isbn").text());
-		book.setOnlineIsbn(summary.getElementById(
-				"abstract-about-book-online-isbn").text());
-		book.setAuthor(summary.getElementsByClass("person").first().text());
-		book.setUrl(url);
+		infos.put("subtitle",
+				summary.getElementById("abstract-about-book-subtitle").text());
+		infos.put(
+				"year",
+				summary.getElementById(
+						"abstract-about-book-chapter-copyright-year").text());
+		infos.put("doi",
+				summary.getElementById("abstract-about-book-chapter-doi")
+						.text());
+		infos.put("printIsbn",
+				summary.getElementById("abstract-about-book-print-isbn").text());
+		infos.put("olineIsbn",
+				summary.getElementById("abstract-about-book-online-isbn")
+						.text());
+		infos.put("author", summary.getElementsByClass("person").first().text());
+		infos.put("url", url);
+		book.setInfos(infos);
 		book.setChapters(chapters);
 	}
 
@@ -124,7 +137,7 @@ public class Parser {
 				pdfUrl = new URL(item.select("a[href$=.pdf]").first()
 						.attr("abs:href"));
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, "MalformedURLException", e);
 			}
 			chapters.put(page, pdfUrl);
 		}

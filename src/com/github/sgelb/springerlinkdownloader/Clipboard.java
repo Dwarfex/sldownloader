@@ -13,11 +13,17 @@ package com.github.sgelb.springerlinkdownloader;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Clipboard {
+	private final static Logger LOGGER = Logger.getLogger(Clipboard.class
+			.getName());
+	
 	public static String getUrlfromClipboard() {
+		
 		String url = null;
 		String pattern = "(?:http://)?link.springer.com/book/\\b(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![\"&\\'<>])\\S)+)\\b";
 		
@@ -36,7 +42,7 @@ public class Clipboard {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, "Exception", e);
 		}
 		return url;
 	}

@@ -38,7 +38,7 @@ public class Pdf {
 
 	public Pdf(Book book, File saveFolder) {
 		this.book = book;
-		System.out.println(book.getAuthor() + " - " + book.getTitle());
+		System.out.println(book.getInfo("author") + " - " + book.getInfo("title"));
 		this.chapters = book.getChapters();
 		this.saveFolder = saveFolder;
 	}
@@ -84,12 +84,14 @@ public class Pdf {
 	}
 
 	public void create() throws DocumentException, IOException {
-		String title = book.getPdfTitle() + ".pdf";
+		// TODO: test getInfo != null
+		String title = book.getInfo("title") + ".pdf";
 		File dest = new File(saveFolder, title);
 
 		int count = 1;
 		while (dest.exists()) {
-			title = book.getPdfTitle() + "_" + count++ + ".pdf";
+			// TODO: test getInfo != null
+			title = book.getInfo("title") + "_" + count++ + ".pdf";
 			dest = new File(saveFolder, title);
 		}
 
