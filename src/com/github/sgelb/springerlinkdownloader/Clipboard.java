@@ -28,7 +28,7 @@ public class Clipboard {
 				url = (String) trans.getTransferData(DataFlavor.stringFlavor);
 				Matcher matcher = Pattern.compile(pattern).matcher(url);
 				if (matcher.matches()) {
-					return url;
+					return url.trim();
 				}
 				else {
 					url = null;

@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.github.sgelb.springerlinkdownloader;
 
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,7 +23,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-
 public class Parser {
 	private String url;
 	private String urlBase;
@@ -35,8 +33,8 @@ public class Parser {
 	public Parser(String url, Book book) {
 		System.setProperty("java.net.useSystemProxies", "true");
 		this.book = book;
-		this.url = url.replaceAll("/page/\\d+$", "");
-		this.urlBase = url + "/page/";
+		this.url = url.replaceAll("/page/\\d+(?:/)?$", "");
+		this.urlBase = this.url + "/page/";
 	}
 
 	public void run() {
