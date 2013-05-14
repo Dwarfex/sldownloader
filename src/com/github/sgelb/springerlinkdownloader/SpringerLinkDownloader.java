@@ -29,8 +29,12 @@ public class SpringerLinkDownloader {
 		// doi = ${prefix}/${onlineISBN}
 		// /page/1 is optional
 		
-		// Pattern kompakt.
+		// Pattern kompakt. Enthält keine Bookmarks
 		// String url = "http://link.springer.com/book/10.1007/978-3-8274-2526-3/page/1";
+
+		// Java als erste Programmiersprache
+		// String url = "http://link.springer.com/book/10.1007/978-3-8348-9854-8/page/1";
+		
 		
 		String url = Clipboard.getUrlfromClipboard(); 
 		File saveFolder = new File(System.getProperty("user.home"));

@@ -1,6 +1,7 @@
 TODO
 ====
 
-- Roman numbers in last pages
 - debug logging
+- i18n
+- Roman numbers in last pages
 - GUI
