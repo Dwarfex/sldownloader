@@ -30,8 +30,14 @@ public class Book {
 		this.infos = infos;
 	}
 
+	
+	public String getPdfTitle() {
+		// TODO: check if author and title != null 
+		return (infos.get("author") + "-" + infos.get("title")).replace(" ", "_");
+	}
+	
 	public String getInfo(String info) {
-		if (infos.containsValue(info)) {
+		if (infos.containsKey(info)) {
 			return infos.get(info);
 		} else {
 			return null;

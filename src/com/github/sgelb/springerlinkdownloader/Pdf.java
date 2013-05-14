@@ -84,14 +84,12 @@ public class Pdf {
 	}
 
 	public void create() throws DocumentException, IOException {
-		// TODO: test getInfo != null
-		String title = book.getInfo("title") + ".pdf";
+		String title = book.getPdfTitle() + ".pdf";
 		File dest = new File(saveFolder, title);
 
 		int count = 1;
 		while (dest.exists()) {
-			// TODO: test getInfo != null
-			title = book.getInfo("title") + "_" + count++ + ".pdf";
+			title = book.getPdfTitle() + "_" + count++ + ".pdf";
 			dest = new File(saveFolder, title);
 		}
 
