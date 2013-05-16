@@ -1,4 +1,4 @@
-package com.github.sgelb.springerlinkdownloader.gui;
+package com.github.sgelb.springerlinkdownloader.view;
 
 import java.io.File;
 

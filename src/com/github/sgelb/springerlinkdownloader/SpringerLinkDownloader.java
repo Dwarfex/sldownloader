@@ -16,11 +16,11 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
-import com.github.sgelb.springerlinkdownloader.gui.Gui;
-import com.github.sgelb.springerlinkdownloader.logic.Book;
-import com.github.sgelb.springerlinkdownloader.logic.Clipboard;
-import com.github.sgelb.springerlinkdownloader.logic.Parser;
-import com.github.sgelb.springerlinkdownloader.logic.Pdf;
+import com.github.sgelb.springerlinkdownloader.model.Book;
+import com.github.sgelb.springerlinkdownloader.model.Clipboard;
+import com.github.sgelb.springerlinkdownloader.model.Parser;
+import com.github.sgelb.springerlinkdownloader.model.Pdf;
+import com.github.sgelb.springerlinkdownloader.view.Gui;
 import com.itextpdf.text.DocumentException;
 
 public class SpringerLinkDownloader {

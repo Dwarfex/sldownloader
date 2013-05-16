@@ -8,7 +8,7 @@
  * Contributors:
  *     sgelb - initial API and implementation
  ******************************************************************************/
-package com.github.sgelb.springerlinkdownloader.logic;
+package com.github.sgelb.springerlinkdownloader.model;
 
 
 import java.net.URL;

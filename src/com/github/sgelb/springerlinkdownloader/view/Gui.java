@@ -1,13 +1,10 @@
-package com.github.sgelb.springerlinkdownloader.gui;
+package com.github.sgelb.springerlinkdownloader.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,10 +14,10 @@ import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
+import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
+
 public class Gui {
 
-	private JTextField saveFolderField = new JTextField(30);
-	
 	public void run() {
 		JFrame frame = new JFrame("SpringerLink Downloader");
 		frame.setLayout(new BorderLayout());
@@ -86,6 +83,7 @@ public class Gui {
 		c.gridy = 1;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.anchor = GridBagConstraints.LINE_START;
+		JTextField saveFolderField = new JTextField(30);
 		saveFolderField.setText(System.getProperty("user.home"));
 		upperArea.add(saveFolderField, c);
 
@@ -100,25 +98,22 @@ public class Gui {
 		c.anchor = GridBagConstraints.EAST;
 
 		JButton browseBtn = new JButton("Browse…");
-		browseBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				File saveFolder = SaveFolderDialog.getPath(System.getProperty("user.home"));
-				saveFolderField.setText(saveFolder.toString());
-			}
-		});
+		BrowseBtnController browseBtnController = new BrowseBtnController(saveFolderField);
+		browseBtn.addActionListener(browseBtnController);
 		upperArea.add(browseBtn, c);
-		
+
+
 		frame.add(upperArea, BorderLayout.CENTER);
-		
+
 		// LOWER AREA
-		
+
 		JButton cancelBtn = new JButton("Cancel");
 		JButton startBtn = new JButton("Start");
 		startBtn.setEnabled(false);
 
 		lowerArea.add(cancelBtn);
 		lowerArea.add(startBtn, c);
-		
+
 		frame.add(lowerArea, BorderLayout.SOUTH);
 
 		//////
