@@ -15,9 +15,13 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
+import com.github.sgelb.springerlinkdownloader.controller.UrlFieldController;
 
 public class Gui {
 
+	private int textFieldWidth = 30;
+	private JButton startBtn = new JButton("Start");
+	
 	public void run() {
 		JFrame frame = new JFrame("SpringerLink Downloader");
 		frame.setLayout(new BorderLayout());
@@ -74,16 +78,20 @@ public class Gui {
 		// COLUMN 1
 
 		// "URL"-Textfield
+		// TODO add DocumentFilter.
+		// if input passes RegEx, change border color to green and
+		// enable "Start"-Button.
 		c.gridx = 1;
 		c.gridy = 0;
-		JTextField urlField = new JTextField(30);
+		JTextField urlField = new JTextField(textFieldWidth);
+		urlField.getDocument().addDocumentListener(new UrlFieldController(startBtn));
 		upperArea.add(urlField, c);
 
 		// "save Folder"-Textfield
 		c.gridy = 1;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.anchor = GridBagConstraints.LINE_START;
-		JTextField saveFolderField = new JTextField(30);
+		JTextField saveFolderField = new JTextField(textFieldWidth);
 		saveFolderField.setText(System.getProperty("user.home"));
 		upperArea.add(saveFolderField, c);
 
@@ -98,8 +106,7 @@ public class Gui {
 		c.anchor = GridBagConstraints.EAST;
 
 		JButton browseBtn = new JButton("Browse…");
-		BrowseBtnController browseBtnController = new BrowseBtnController(saveFolderField);
-		browseBtn.addActionListener(browseBtnController);
+		browseBtn.addActionListener(new BrowseBtnController(saveFolderField));
 		upperArea.add(browseBtn, c);
 
 
@@ -108,7 +115,6 @@ public class Gui {
 		// LOWER AREA
 
 		JButton cancelBtn = new JButton("Cancel");
-		JButton startBtn = new JButton("Start");
 		startBtn.setEnabled(false);
 
 		lowerArea.add(cancelBtn);

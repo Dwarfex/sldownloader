@@ -16,8 +16,8 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
 import com.github.sgelb.springerlinkdownloader.model.Book;
-import com.github.sgelb.springerlinkdownloader.model.Clipboard;
 import com.github.sgelb.springerlinkdownloader.model.Parser;
 import com.github.sgelb.springerlinkdownloader.model.Pdf;
 import com.github.sgelb.springerlinkdownloader.view.Gui;
