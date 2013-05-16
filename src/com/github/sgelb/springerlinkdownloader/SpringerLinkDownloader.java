@@ -16,6 +16,12 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import com.github.sgelb.springerlinkdownloader.gui.Gui;
+import com.github.sgelb.springerlinkdownloader.gui.SaveFolderDialog;
+import com.github.sgelb.springerlinkdownloader.logic.Book;
+import com.github.sgelb.springerlinkdownloader.logic.Clipboard;
+import com.github.sgelb.springerlinkdownloader.logic.Parser;
+import com.github.sgelb.springerlinkdownloader.logic.Pdf;
 import com.itextpdf.text.DocumentException;
 
 public class SpringerLinkDownloader {

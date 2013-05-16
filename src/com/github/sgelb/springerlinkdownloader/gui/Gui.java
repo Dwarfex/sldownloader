@@ -1,4 +1,4 @@
-package com.github.sgelb.springerlinkdownloader;
+package com.github.sgelb.springerlinkdownloader.gui;
 
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
