@@ -17,7 +17,6 @@ import java.util.Scanner;
 import javax.swing.SwingUtilities;
 
 import com.github.sgelb.springerlinkdownloader.gui.Gui;
-import com.github.sgelb.springerlinkdownloader.gui.SaveFolderDialog;
 import com.github.sgelb.springerlinkdownloader.logic.Book;
 import com.github.sgelb.springerlinkdownloader.logic.Clipboard;
 import com.github.sgelb.springerlinkdownloader.logic.Parser;
@@ -80,7 +79,6 @@ public class SpringerLinkDownloader {
 
 	public void runGUI() {
 		SwingUtilities.invokeLater(new Runnable() {
-
 			public void run() {
 				Gui gb = new Gui();
 				gb.run();
