@@ -16,10 +16,12 @@ import javax.swing.JTextField;
 
 import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
 import com.github.sgelb.springerlinkdownloader.controller.UrlFieldController;
+import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
+import com.github.sgelb.springerlinkdownloader.helper.RegEx;
 
 public class Gui {
 
-	private int textFieldWidth = 30;
+	private int textFieldWidth = 40;
 	private JButton startBtn = new JButton("Start");
 	
 	public void run() {
@@ -81,6 +83,7 @@ public class Gui {
 		c.gridx = 1;
 		c.gridy = 0;
 		JTextField urlField = new JTextField(textFieldWidth);
+		urlField.setText(Clipboard.getUrlfromClipboard());
 		urlField.getDocument().addDocumentListener(new UrlFieldController(startBtn));
 		upperArea.add(urlField, c);
 
@@ -113,7 +116,7 @@ public class Gui {
 		// LOWER AREA
 
 		JButton cancelBtn = new JButton("Cancel");
-		startBtn.setEnabled(false);
+		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
 
 		lowerArea.add(cancelBtn);
 		lowerArea.add(startBtn, c);
