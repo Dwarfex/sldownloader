@@ -10,10 +10,11 @@
  ******************************************************************************/
 package com.github.sgelb.springerlinkdownloader.model;
 
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +24,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 
 public class Parser {
 	private String url;
@@ -84,16 +84,26 @@ public class Parser {
 
 	public void setBookData() {
 		Element summary = doc.getElementsByClass("summary").first();
-		// FIXME: get all authors
-		book.setInfo("author", summary.getElementsByClass("person").first().text());
-		book.setInfo("title", summary.getElementById("abstract-about-title").text());
-		book.setInfo("subtitle", summary.getElementById("abstract-about-book-subtitle").text());
-		book.setInfo("year", summary.getElementById("abstract-about-book-chapter-copyright-year").text());
-		book.setInfo("doi" ,summary.getElementById("abstract-about-book-chapter-doi").text());
-		book.setInfo("printIsbn" ,summary.getElementById("abstract-about-book-print-isbn").text());
-		book.setInfo("onlineIsbn", summary.getElementById("abstract-about-book-online-isbn").text());
+		HashMap<String, String> cssClasses = new HashMap<>();
+		// <key name, css class name>
+		cssClasses.put("author", "person");
+		cssClasses.put("title", "abstract-about-title");
+		cssClasses.put("subtitle", "abstract-about-book-subtitle");
+		cssClasses.put("year", "abstract-about-book-chapter-copyright-year");
+		cssClasses.put("doi", "abstract-about-book-chapter-doi");
+		cssClasses.put("printIsbn", "abstract-about-book-print-isbn");
+		cssClasses.put("onlineIsbn", "abstract-about-book-online-isbn");
+
+		for (Entry<String, String> cssClass : cssClasses.entrySet()) {
+			// FIXME: get all authors
+			String text = summary.getElementsByClass(cssClass.getValue())
+					.first().text();
+			if (!text.isEmpty()) {
+				book.setInfo(cssClass.getKey(), text);
+			}
+		}
+
 		book.setInfo("url", url);
-		
 		book.setChapters(chapters);
 	}
 

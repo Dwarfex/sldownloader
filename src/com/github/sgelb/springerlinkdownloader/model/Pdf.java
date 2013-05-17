@@ -123,6 +123,10 @@ public class Pdf {
 
 		}
 		destPdf.setOutlines(bookmarks);
+		
+		if (book.getInfo("author") != null) document.addAuthor(book.getInfo("author"));
+		if (book.getInfo("title") != null) document.addTitle(book.getInfo("title"));
+		if (book.getInfo("subtitle") != null) document.addSubject(book.getInfo("subtitle"));
 		document.close();
 
 		System.out.println("Merge complete. Saved to " + dest);

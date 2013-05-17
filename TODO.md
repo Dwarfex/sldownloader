@@ -1,6 +1,6 @@
 ### a list of thing to do
 
-- set meta data of pdf, i.e. author and title
+- get all authors
 - set license for all files
 
 - add possibility to start CLI or GUI
