@@ -62,7 +62,7 @@ public class Parser {
 			System.exit(-1);
 		}
 
-		if (doc.hasClass("access-link")) {
+		if (!doc.getElementsByClass("access-link").isEmpty()) {
 			System.out
 					.println("You have no access to this book. Are you connecting from the right network?");
 			System.exit(-1);
@@ -101,7 +101,6 @@ public class Parser {
 
 		for (Entry<String, String> cssId : cssIds.entrySet()) {
 			String text = summary.getElementById(cssId.getValue()).text();
-			System.out.println(cssId.getKey() + " : " + text);
 			if (text != null) {
 				book.setInfo(cssId.getKey(), text);
 			}
@@ -131,7 +130,7 @@ public class Parser {
 		for (Element item : items) {
 			String pageString = item.getElementsByClass("page-range").first()
 					.text();
-			Matcher matcher = Pattern.compile("\\d+|[MDCLXVI]").matcher(
+			Matcher matcher = Pattern.compile("\\d+|[MDCLXVI]", Pattern.CASE_INSENSITIVE).matcher(
 					pageString);
 
 			String page = null;

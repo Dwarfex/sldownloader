@@ -33,9 +33,10 @@ public class SpringerLinkDownloader {
 		// /page/1 is optional
 		// String url =
 		// "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
-		
-		// No subtitle and two authors
-		// String url = "http://link.springer.com/book/10.1007/978-1-4614-3262-3";
+
+		// English book - no access
+		// String url =
+		// "http://link.springer.com/book/10.1007/978-3-642-32405-5"
 		
 		String url = Clipboard.getUrlfromClipboard();
 		File saveFolder = new File(System.getProperty("user.home"));
@@ -92,7 +93,7 @@ public class SpringerLinkDownloader {
 	public static void main(String[] args) {
 		SpringerLinkDownloader sl = new SpringerLinkDownloader();
 		sl.runCLI();
-		//sl.runGUI();
+		// sl.runGUI();
 	}
 
 }

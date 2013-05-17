@@ -1,6 +1,5 @@
 ### a list of thing to do
 
-- get all authors
 - set license for all files
 
 - add possibility to start CLI or GUI
