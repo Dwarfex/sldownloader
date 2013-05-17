@@ -1,4 +1,3 @@
-SpringerLink Downloader
-=======================
+### SpringerLink Downloader
 
-Download pdfs and merge them.
+Download all book chapters from SpringerLink and merge them into a single PDF file.
