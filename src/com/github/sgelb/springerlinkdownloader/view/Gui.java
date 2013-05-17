@@ -91,9 +91,9 @@ public class Gui {
 		c.gridy = 1;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.anchor = GridBagConstraints.LINE_START;
-		JTextField saveFolderField = new JTextField(textFieldWidth);
-		saveFolderField.setText(System.getProperty("user.home"));
-		upperArea.add(saveFolderField, c);
+		JLabel saveFolderLabel = new JLabel();
+		saveFolderLabel.setText(System.getProperty("user.home"));
+		upperArea.add(saveFolderLabel, c);
 
 		// COLUMN 2
 		
@@ -106,7 +106,7 @@ public class Gui {
 		c.anchor = GridBagConstraints.EAST;
 
 		JButton browseBtn = new JButton("Browse…");
-		browseBtn.addActionListener(new BrowseBtnController(saveFolderField));
+		browseBtn.addActionListener(new BrowseBtnController(saveFolderLabel));
 		upperArea.add(browseBtn, c);
 
 
