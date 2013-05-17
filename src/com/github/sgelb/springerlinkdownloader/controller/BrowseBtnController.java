@@ -17,9 +17,13 @@ public class BrowseBtnController implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		File saveFolder = SaveFolderDialog.getPath(System.getProperty("user.home"));
+		File saveFolder = SaveFolderDialog.getPath(saveFolderLabel.getText());
 		if (saveFolder != null) {
 			saveFolderLabel.setText(saveFolder.toString());
+			saveFolderLabel.setToolTipText(saveFolder.toString());
+		}
+		else {
+			saveFolderLabel.setToolTipText(saveFolderLabel.getText());
 		}
 	}
 }

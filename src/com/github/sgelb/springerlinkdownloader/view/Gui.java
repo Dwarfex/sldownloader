@@ -78,9 +78,6 @@ public class Gui {
 		// COLUMN 1
 
 		// "URL"-Textfield
-		// TODO add DocumentFilter.
-		// if input passes RegEx, change border color to green and
-		// enable "Start"-Button.
 		c.gridx = 1;
 		c.gridy = 0;
 		JTextField urlField = new JTextField(textFieldWidth);
@@ -93,6 +90,7 @@ public class Gui {
 		c.anchor = GridBagConstraints.LINE_START;
 		JLabel saveFolderLabel = new JLabel();
 		saveFolderLabel.setText(System.getProperty("user.home"));
+		saveFolderLabel.setToolTipText(saveFolderLabel.getText());
 		upperArea.add(saveFolderLabel, c);
 
 		// COLUMN 2
