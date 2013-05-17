@@ -84,19 +84,16 @@ public class Parser {
 
 	public void setBookData() {
 		Element summary = doc.getElementsByClass("summary").first();
-		book.setTitle(summary.getElementById("abstract-about-title").text());
-		book.setSubtitle(summary.getElementById("abstract-about-book-subtitle")
-				.text());
-		book.setYear(summary.getElementById(
-				"abstract-about-book-chapter-copyright-year").text());
-		book.setDoi(summary.getElementById("abstract-about-book-chapter-doi")
-				.text());
-		book.setPrintIsbn(summary.getElementById(
-				"abstract-about-book-print-isbn").text());
-		book.setOnlineIsbn(summary.getElementById(
-				"abstract-about-book-online-isbn").text());
-		book.setAuthor(summary.getElementsByClass("person").first().text());
-		book.setUrl(url);
+		// FIXME: get all authors
+		book.setInfo("author", summary.getElementsByClass("person").first().text());
+		book.setInfo("title", summary.getElementById("abstract-about-title").text());
+		book.setInfo("subtitle", summary.getElementById("abstract-about-book-subtitle").text());
+		book.setInfo("year", summary.getElementById("abstract-about-book-chapter-copyright-year").text());
+		book.setInfo("doi" ,summary.getElementById("abstract-about-book-chapter-doi").text());
+		book.setInfo("printIsbn" ,summary.getElementById("abstract-about-book-print-isbn").text());
+		book.setInfo("onlineIsbn", summary.getElementById("abstract-about-book-online-isbn").text());
+		book.setInfo("url", url);
+		
 		book.setChapters(chapters);
 	}
 

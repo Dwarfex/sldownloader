@@ -38,7 +38,6 @@ public class Pdf {
 
 	public Pdf(Book book, File saveFolder) {
 		this.book = book;
-		System.out.println(book.getAuthor() + " - " + book.getTitle());
 		this.chapters = book.getChapters();
 		this.saveFolder = saveFolder;
 	}
