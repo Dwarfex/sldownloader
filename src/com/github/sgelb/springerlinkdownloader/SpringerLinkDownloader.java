@@ -91,8 +91,8 @@ public class SpringerLinkDownloader {
 
 	public static void main(String[] args) {
 		SpringerLinkDownloader sl = new SpringerLinkDownloader();
-		//sl.runCLI();
-		sl.runGUI();
+		sl.runCLI();
+		//sl.runGUI();
 	}
 
 }

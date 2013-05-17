@@ -19,6 +19,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,6 +36,9 @@ public class Parser {
 	public Parser(String url, Book book) {
 		System.setProperty("java.net.useSystemProxies", "true");
 		this.book = book;
+		if (!url.startsWith("http://")) {
+			url = "http://" + url;
+		}
 		this.url = url.replaceAll("/page/\\d+$", "");
 		this.urlBase = url + "/page/";
 	}
@@ -47,7 +51,9 @@ public class Parser {
 	public void parseHtml() {
 
 		try {
-			doc = Jsoup.connect(url).timeout(5000).get();
+			Connection con = Jsoup.connect(url);
+			con.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
+			doc = con.timeout(5000).get();
 		} catch (HttpStatusException e) {
 			System.out.println("Error: " + e.getStatusCode());
 			System.exit(-1);
@@ -56,7 +62,7 @@ public class Parser {
 			System.exit(-1);
 		}
 
-		if (doc.getElementsByClass("access-link") != null) {
+		if (doc.hasClass("access-link")) {
 			System.out
 					.println("You have no access to this book. Are you connecting from the right network?");
 			System.exit(-1);
@@ -84,24 +90,36 @@ public class Parser {
 
 	public void setBookData() {
 		Element summary = doc.getElementsByClass("summary").first();
-		HashMap<String, String> cssClasses = new HashMap<>();
-		// <key name, css class name>
-		cssClasses.put("author", "person");
-		cssClasses.put("title", "abstract-about-title");
-		cssClasses.put("subtitle", "abstract-about-book-subtitle");
-		cssClasses.put("year", "abstract-about-book-chapter-copyright-year");
-		cssClasses.put("doi", "abstract-about-book-chapter-doi");
-		cssClasses.put("printIsbn", "abstract-about-book-print-isbn");
-		cssClasses.put("onlineIsbn", "abstract-about-book-online-isbn");
+		HashMap<String, String> cssIds = new HashMap<>();
+		// <key name, css id name>
+		cssIds.put("title", "abstract-about-title");
+		cssIds.put("subtitle", "abstract-about-book-subtitle");
+		cssIds.put("year", "abstract-about-book-chapter-copyright-year");
+		cssIds.put("doi", "abstract-about-book-chapter-doi");
+		cssIds.put("printIsbn", "abstract-about-book-print-isbn");
+		cssIds.put("onlineIsbn", "abstract-about-book-online-isbn");
 
-		for (Entry<String, String> cssClass : cssClasses.entrySet()) {
-			// FIXME: get all authors
-			String text = summary.getElementsByClass(cssClass.getValue())
-					.first().text();
-			if (!text.isEmpty()) {
-				book.setInfo(cssClass.getKey(), text);
+		for (Entry<String, String> cssId : cssIds.entrySet()) {
+			String text = summary.getElementById(cssId.getValue()).text();
+			System.out.println(cssId.getKey() + " : " + text);
+			if (text != null) {
+				book.setInfo(cssId.getKey(), text);
 			}
 		}
+		
+		Elements authorElements = summary.getElementsByClass("person");
+		if (!authorElements.isEmpty()) {
+			String author = null;
+			for ( Element authorElement : authorElements) {
+				if (author == null) {
+					author = authorElement.text();
+					continue;
+				}
+				author += ", " + authorElement.text(); 
+			}
+			book.setInfo("author", author);
+		}
+		
 
 		book.setInfo("url", url);
 		book.setChapters(chapters);
