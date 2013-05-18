@@ -40,7 +40,6 @@ public class SpringerLinkDownloader {
 		
 		String url = Clipboard.getUrlfromClipboard();
 		File saveFolder = new File(System.getProperty("user.home"));
-		boolean delTmpPdfs = true;
 
 		// begin menu
 
@@ -60,10 +59,6 @@ public class SpringerLinkDownloader {
 		tmp = scanner.nextLine().trim();
 		if (!tmp.isEmpty()) saveFolder = new File(tmp);
 
-		System.out.print("Delete temporary files? [Yn]\n> ");
-		if (scanner.nextLine().trim().equalsIgnoreCase("n")) {
-			delTmpPdfs = false;
-		}
 		scanner.close();
 
 		// end menu
@@ -73,7 +68,7 @@ public class SpringerLinkDownloader {
 		parsePage.run();
 		Pdf pdf = new Pdf(book, saveFolder);
 
-		pdf.download(delTmpPdfs);
+		pdf.downloadAll();
 		try {
 			pdf.create();
 		} catch (DocumentException | IOException e) {
@@ -92,8 +87,8 @@ public class SpringerLinkDownloader {
 
 	public static void main(String[] args) {
 		SpringerLinkDownloader sl = new SpringerLinkDownloader();
-		sl.runCLI();
-		// sl.runGUI();
+		//sl.runCLI();
+		sl.runGUI();
 	}
 
 }

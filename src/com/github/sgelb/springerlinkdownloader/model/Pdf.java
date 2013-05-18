@@ -42,43 +42,44 @@ public class Pdf {
 		this.saveFolder = saveFolder;
 	}
 
-	public void download(boolean delTmpPdfs) {
+	public void download(Entry<String, URL> chapter) {
+		try {
+			URL url = chapter.getValue();
+			url.openConnection();
+			InputStream reader = url.openStream();
+
+			File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf",
+					new File(System.getProperty("java.io.tmpdir")));
+			tmpPdfFile.deleteOnExit();
+			
+			FileOutputStream writer = new FileOutputStream(tmpPdfFile);
+			byte[] buffer = new byte[131072];
+			int bytesRead = 0;
+
+			while ((bytesRead = reader.read(buffer)) > 0) {
+				writer.write(buffer, 0, bytesRead);
+				buffer = new byte[131071];
+			}
+			writer.close();
+			reader.close();
+
+			src.add(tmpPdfFile);
+			System.out.println(" succeed.");
+		} catch (MalformedURLException e) {
+			System.out.println(" failed.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println(" failed.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void downloadAll() {
 		int count = 1;
 		System.out.println("Start downloading…");
-
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
-			try {
-				System.out.print(":: " + count++ + "/" + chapters.size());
-				URL url = chapter.getValue();
-				url.openConnection();
-				InputStream reader = url.openStream();
-
-				File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf",
-						new File(System.getProperty("java.io.tmpdir")));
-				if (delTmpPdfs) {
-					tmpPdfFile.deleteOnExit();
-				}
-				FileOutputStream writer = new FileOutputStream(tmpPdfFile);
-				byte[] buffer = new byte[131072];
-				int bytesRead = 0;
-
-				while ((bytesRead = reader.read(buffer)) > 0) {
-					writer.write(buffer, 0, bytesRead);
-					buffer = new byte[131071];
-				}
-				writer.close();
-				reader.close();
-
-				src.add(tmpPdfFile);
-				System.out.println(" succeed.");
-
-			} catch (MalformedURLException e) {
-				System.out.println(" failed.");
-				e.printStackTrace();
-			} catch (IOException e) {
-				System.out.println(" failed.");
-				e.printStackTrace();
-			}
+			System.out.print(":: " + count++ + "/" + chapters.size());
+			download(chapter);
 		}
 	}
 

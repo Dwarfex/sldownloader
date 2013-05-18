@@ -15,6 +15,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
+import com.github.sgelb.springerlinkdownloader.controller.StartBtnController;
 import com.github.sgelb.springerlinkdownloader.controller.UrlFieldController;
 import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
 import com.github.sgelb.springerlinkdownloader.helper.RegEx;
@@ -23,21 +24,21 @@ public class Gui {
 
 	private int textFieldWidth = 40;
 	private JButton startBtn = new JButton("Start");
-	
+
 	public void run() {
 		JFrame frame = new JFrame("SpringerLink Downloader");
 		frame.setLayout(new BorderLayout());
 
 		JPanel upperArea = new JPanel();
 		upperArea.setLayout(new GridBagLayout());
-		
+
 		JPanel lowerArea = new JPanel();
 		lowerArea.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		// UPPER AREA
-		
+
 		GridBagConstraints c;
-		Insets set = new Insets(5, 5, 5, 5);
+		Insets set = new Insets(6, 6, 6, 6);
 
 		// COLUMN 0
 
@@ -63,10 +64,10 @@ public class Gui {
 		c.anchor = GridBagConstraints.LINE_START;
 		upperArea.add(new JSeparator(), c);
 
-		// "What is happening"-Label
+		// "Progress"-Label
 		c.gridy = 3;
-		JLabel updateText = new JLabel("n/a");
-		upperArea.add(updateText, c);
+		JLabel progressText = new JLabel("Enter URL, select save folder and press »Start«");
+		upperArea.add(progressText, c);
 
 		// Progressbar
 		c.gridy = 4;
@@ -84,7 +85,8 @@ public class Gui {
 		c.gridy = 0;
 		JTextField urlField = new JTextField(textFieldWidth);
 		urlField.setText(Clipboard.getUrlfromClipboard());
-		urlField.getDocument().addDocumentListener(new UrlFieldController(startBtn));
+		urlField.getDocument().addDocumentListener(
+				new UrlFieldController(startBtn));
 		upperArea.add(urlField, c);
 
 		// "save Folder"-Textfield
@@ -97,7 +99,7 @@ public class Gui {
 		upperArea.add(saveFolderLabel, c);
 
 		// COLUMN 2
-		
+
 		// "Browse"-Button
 		c = new GridBagConstraints();
 		c.insets = set;
@@ -110,20 +112,21 @@ public class Gui {
 		browseBtn.addActionListener(new BrowseBtnController(saveFolderLabel));
 		upperArea.add(browseBtn, c);
 
-
 		frame.add(upperArea, BorderLayout.CENTER);
 
 		// LOWER AREA
 
 		JButton cancelBtn = new JButton("Cancel");
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
+		startBtn.addActionListener(new StartBtnController(urlField,
+				saveFolderLabel, progressText, progressBar, startBtn, browseBtn));
 
 		lowerArea.add(cancelBtn);
 		lowerArea.add(startBtn, c);
 
 		frame.add(lowerArea, BorderLayout.SOUTH);
 
-		//////
+		// ////
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();

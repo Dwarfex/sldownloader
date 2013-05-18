@@ -4,6 +4,7 @@
 
 - add possibility to start CLI or GUI
 
-- add controller to "Start"-Button: start parsing, downloading, merging
-- add controller to "Cancel"-Button: stop all actions, delete all files
+- implement "Cancel"-Button
+- better exception handling
 - add ToolTips to everything.
+- re-design GUI according to Gnome Human Interface Guidelines
