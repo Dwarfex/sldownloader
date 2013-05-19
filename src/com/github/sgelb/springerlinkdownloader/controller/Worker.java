@@ -28,7 +28,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 	private JLabel progressText;
 	private JButton startBtn;
 	private JButton browseBtn;
-
+	private Pdf pdf;
 	private TreeMap<String, URL> chapters = new TreeMap<>();
 
 	public Worker(JTextField urlField, JLabel saveFolderLabel,
@@ -44,51 +44,70 @@ public class Worker extends SwingWorker<Void, Integer> {
 	}
 
 	protected Void doInBackground() throws Exception {
-		browseBtn.setEnabled(false);
-		startBtn.setEnabled(false);
-		urlField.setEditable(false);
+		if (!isCancelled()) {
+			browseBtn.setEnabled(false);
+			startBtn.setEnabled(false);
+			urlField.setEditable(false);
+
+			progressText.setText("Parsing page…");
+			progressBar.setIndeterminate(true);
+			
+			Parser parsePage = new Parser(urlField.getText(), book);
+			parsePage.run();
+			chapters = book.getChapters();
+		}
+
+		if (!isCancelled()) {
+			progressText.setText("Downloading files…");
+			progressBar.setIndeterminate(false);
+			progressBar.setMaximum(chapters.size());
+
+			pdf = new Pdf(book, saveFolder);
+			Integer count = 1;
+			for (Entry<String, URL> chapter : chapters.entrySet()) {
+				if (!isCancelled()) {
+					pdf.download(chapter);
+				}
+				progressBar.setString("[" + count + "/" + chapters.size() + "]");
+				progressBar.setValue(count++);
+			}
+			progressBar.setString("");
+		}
+
+		if (!isCancelled()) {
+			progressText.setText("Merging files…");
+			try {
+				pdf.create();
+			} catch (DocumentException | IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
-		progressText.setText("Parsing page…");
-		progressBar.setStringPainted(false);
-		progressBar.setIndeterminate(true);
-		Parser parsePage = new Parser(urlField.getText(), book);
-		parsePage.run();
-		chapters = book.getChapters();
-
-		progressText.setText("Downloading files…");
-		progressBar.setStringPainted(true);
-		progressBar.setIndeterminate(false);
-		progressBar.setMaximum(chapters.size());
-		Pdf pdf = new Pdf(book, saveFolder);
-		Integer count = 1;
-		for (Entry<String, URL> chapter : chapters.entrySet()) {
-			pdf.download(chapter);
-			progressBar.setValue(count++);
+		if (isCancelled()) {
+			progressText.setText("Cancelled.");
+			progressBar.setValue(0);
+			if (book.getInfo("saveFile") != null) {
+				File saveFile = new File(book.getInfo("saveFile"));
+				if (saveFile.exists()) {
+					saveFile.delete();
+				}
+			}
+		} else {
+			progressText.setText("Created " + book.getInfo("saveFile")+ ".");
 		}
-
-		progressText.setText("Creating " + book.getPdfTitle() + "…");
-		progressBar.setStringPainted(false);
-		progressBar.setIndeterminate(true);
-		try {
-			pdf.create();
-		} catch (DocumentException | IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	
-
-	protected void done() {
-		progressText.setText("Done.");
+		
 		progressBar.setIndeterminate(false);
 		browseBtn.setEnabled(true);
 		startBtn.setEnabled(true);
 		urlField.setEditable(true);
+		pdf.deleteTemp();
+		return null;
+	}
+
+	protected void done() {
 		try {
 			super.get();
 		} catch (CancellationException e) {
-			
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}

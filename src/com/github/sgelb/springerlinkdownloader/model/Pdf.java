@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +36,18 @@ public class Pdf {
 	private TreeMap<String, URL> chapters = new TreeMap<>();
 	private File saveFolder;
 	private ArrayList<File> src = new ArrayList<>();
-
+	private File tmpDir;
+	
 	public Pdf(Book book, File saveFolder) {
 		this.book = book;
 		this.chapters = book.getChapters();
 		this.saveFolder = saveFolder;
+		try {
+			tmpDir = Files.createTempDirectory(null).toFile();
+			tmpDir.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		};
 	}
 
 	public void download(Entry<String, URL> chapter) {
@@ -47,9 +55,8 @@ public class Pdf {
 			URL url = chapter.getValue();
 			url.openConnection();
 			InputStream reader = url.openStream();
-
-			File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf",
-					new File(System.getProperty("java.io.tmpdir")));
+			
+			File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf", tmpDir);
 			tmpPdfFile.deleteOnExit();
 			
 			FileOutputStream writer = new FileOutputStream(tmpPdfFile);
@@ -64,7 +71,6 @@ public class Pdf {
 			reader.close();
 
 			src.add(tmpPdfFile);
-			System.out.println(" succeed.");
 		} catch (MalformedURLException e) {
 			System.out.println(" failed.");
 			e.printStackTrace();
@@ -80,21 +86,24 @@ public class Pdf {
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
 			System.out.print(":: " + count++ + "/" + chapters.size());
 			download(chapter);
+			System.out.println(" succeed.");
 		}
 	}
 
 	public void create() throws DocumentException, IOException {
+		// TODO: refactor to merge(), mergeAll() 
 		String title = book.getPdfTitle() + ".pdf";
-		File dest = new File(saveFolder, title);
+		File saveFile = new File(saveFolder, title);
 
 		int count = 1;
-		while (dest.exists()) {
+		while (saveFile.exists()) {
 			title = book.getPdfTitle() + "_" + count++ + ".pdf";
-			dest = new File(saveFolder, title);
+			saveFile = new File(saveFolder, title);
 		}
+		book.setInfo("saveFile", saveFile.toString());
 
 		Document document = new Document();
-		PdfCopy destPdf = new PdfCopy(document, new FileOutputStream(dest));
+		PdfCopy destPdf = new PdfCopy(document, new FileOutputStream(saveFile));
 		document.open();
 		PdfReader reader;
 		int page_offset = 0;
@@ -106,6 +115,11 @@ public class Pdf {
 		System.out.println("Start mergin…");
 		for (File srcPdf : src) {
 
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+			}
+			
 			System.out.print(":: " + count++ + "/" + src.size());
 			reader = new PdfReader(srcPdf.toString());
 
@@ -130,6 +144,13 @@ public class Pdf {
 		if (book.getInfo("subtitle") != null) document.addSubject(book.getInfo("subtitle"));
 		document.close();
 
-		System.out.println("Merge complete. Saved to " + dest);
+		System.out.println("Merge complete. Saved to " + saveFile);
+	}
+	
+	public void deleteTemp() {
+		for (File srcPdf : src) {
+			if (srcPdf.exists()) srcPdf.delete();
+		}
+		if (tmpDir.exists()) tmpDir.delete();
 	}
 }

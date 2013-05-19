@@ -8,29 +8,41 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
-public class StartBtnController implements ActionListener {
+public class StartCancelBtnController implements ActionListener {
 
 	private JTextField urlField;
 	private JLabel saveFolderLabel;
 	private JProgressBar progressBar;
 	private JLabel progressText;
 	private JButton startBtn;
+	private JButton cancelBtn;
 	private JButton browseBtn;
+	private Worker worker = null;
 
-	public StartBtnController(JTextField urlField, JLabel saveFolderLabel,
-			JLabel progressText, JProgressBar progressBar, JButton startBtn, JButton browseBtn) {
-		
+	public StartCancelBtnController(JTextField urlField,
+			JLabel saveFolderLabel, JLabel progressText,
+			JProgressBar progressBar, JButton startBtn, JButton browseBtn,
+			JButton cancelBtn) {
+
 		this.urlField = urlField;
 		this.saveFolderLabel = saveFolderLabel;
 		this.progressText = progressText;
 		this.progressBar = progressBar;
 		this.startBtn = startBtn;
 		this.browseBtn = browseBtn;
+		this.cancelBtn = cancelBtn;
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		Worker worker = new Worker(urlField, saveFolderLabel, progressBar, progressText, startBtn, browseBtn);
-		worker.execute();
+		if (e.getSource() == startBtn) {
+			worker = new Worker(urlField, saveFolderLabel, progressBar,
+					progressText, startBtn, browseBtn);
+			worker.execute();
+		} else if (e.getSource() == cancelBtn) {
+			if (worker != null) {
+				worker.cancel(true);
+			}
+		}
 	}
 
 }

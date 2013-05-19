@@ -15,7 +15,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
-import com.github.sgelb.springerlinkdownloader.controller.StartBtnController;
+import com.github.sgelb.springerlinkdownloader.controller.StartCancelBtnController;
 import com.github.sgelb.springerlinkdownloader.controller.UrlFieldController;
 import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
 import com.github.sgelb.springerlinkdownloader.helper.RegEx;
@@ -72,6 +72,8 @@ public class Gui {
 		// Progressbar
 		c.gridy = 4;
 		JProgressBar progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		progressBar.setString("");
 		upperArea.add(progressBar, c);
 
 		// Separator
@@ -118,11 +120,14 @@ public class Gui {
 
 		JButton cancelBtn = new JButton("Cancel");
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
-		startBtn.addActionListener(new StartBtnController(urlField,
-				saveFolderLabel, progressText, progressBar, startBtn, browseBtn));
+		StartCancelBtnController startCancelBtnController;
+		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(urlField,
+				saveFolderLabel, progressText, progressBar, startBtn, browseBtn, cancelBtn)));
 
+		cancelBtn.addActionListener(startCancelBtnController);
+		
 		lowerArea.add(cancelBtn);
-		lowerArea.add(startBtn, c);
+		lowerArea.add(startBtn);
 
 		frame.add(lowerArea, BorderLayout.SOUTH);
 
