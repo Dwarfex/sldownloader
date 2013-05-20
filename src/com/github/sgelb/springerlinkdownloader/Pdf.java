@@ -52,7 +52,7 @@ public class Pdf {
 
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
 			try {
-				System.out.print(":: " + count++ + "/" + chapters.size());
+//				System.out.print(":: " + count++ + "/" + chapters.size());
 				URL url = chapter.getValue();
 				url.openConnection();
 				InputStream reader = url.openStream();
@@ -74,13 +74,13 @@ public class Pdf {
 				reader.close();
 
 				src.add(tmpPdfFile);
-				System.out.println(" succeed.");
+//				System.out.println(" succeed.");
 
 			} catch (MalformedURLException e) {
-				System.out.println(" failed.");
+//				System.out.println(" failed.");
 				e.printStackTrace();
 			} catch (IOException e) {
-				System.out.println(" failed.");
+//				System.out.println(" failed.");
 				e.printStackTrace();
 			}
 		}
@@ -109,7 +109,7 @@ public class Pdf {
 		System.out.println("Start mergin…");
 		for (File srcPdf : src) {
 
-			System.out.print(":: " + count++ + "/" + src.size());
+//			System.out.print(":: " + count++ + "/" + src.size());
 			reader = new PdfReader(srcPdf.toString());
 
 			tmp = SimpleBookmark.getBookmark(reader);
@@ -123,12 +123,12 @@ public class Pdf {
 			}
 			destPdf.freeReader(reader);
 			reader.close();
-			System.out.println(" succeed.");
+//			System.out.println(" succeed.");
 
 		}
 		destPdf.setOutlines(bookmarks);
 		document.close();
 
-		System.out.println("Merge complete. Saved to " + dest);
+//		System.out.println("Merge complete. Saved to " + dest);
 	}
 }
