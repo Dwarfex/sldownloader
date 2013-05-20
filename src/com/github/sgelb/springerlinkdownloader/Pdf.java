@@ -35,17 +35,20 @@ public class Pdf {
 	private TreeMap<String, URL> chapters = new TreeMap<>();
 	private File saveFolder;
 	private ArrayList<File> src = new ArrayList<>();
+	private boolean merge;
 
-	public Pdf(Book book, File saveFolder) {
+	public Pdf(Book book, File saveFolder, boolean merge) {
 		this.book = book;
 		System.out.println(book.getInfo("author") + " - " + book.getInfo("title"));
 		this.chapters = book.getChapters();
 		this.saveFolder = saveFolder;
+		
+		this.merge = merge;
 	}
 
 	public void download(boolean delTmpPdfs) {
 		int count = 1;
-		System.out.println("Start downloading…");
+		System.out.println("Start downloading now ...");
 
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
 			try {

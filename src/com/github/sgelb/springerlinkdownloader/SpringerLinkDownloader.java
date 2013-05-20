@@ -39,8 +39,10 @@ public class SpringerLinkDownloader {
 		String url = Clipboard.getUrlfromClipboard();
 		File saveFolder = new File(System.getProperty("user.home"));
 		boolean delTmpPdfs = true;
+		boolean merge = true;
 
 		// begin menu
+		// TODO: falsche eingaben werden nicht abgefangen
 
 		System.out.println("SpringerLink Downloader (v" + version + ")");
 		Scanner scanner = new Scanner(System.in);
@@ -52,6 +54,7 @@ public class SpringerLinkDownloader {
 		}
 		String tmp = scanner.nextLine().trim();
 		if (!tmp.isEmpty()) url = tmp;
+		// TODO: was wenn keine URL eingegeben ...
 
 		System.out.print("Enter save folder ["
 				+ System.getProperty("user.home") + "]\n> ");
@@ -62,6 +65,16 @@ public class SpringerLinkDownloader {
 		if (scanner.nextLine().trim().equalsIgnoreCase("n")) {
 			delTmpPdfs = false;
 		}
+		
+		if(!delTmpPdfs){
+			System.out.println("Want to merge that stuff? (Y by default) [Yn]\n>");
+			if (scanner.nextLine().trim().equalsIgnoreCase("n")) {
+				merge = false;
+				// vorlaeufige loesung:
+				saveFolder = new File(saveFolder+"/nomerge");
+			}
+		}
+	
 		scanner.close();
 
 		// end menu
@@ -69,7 +82,7 @@ public class SpringerLinkDownloader {
 		Book book = new Book();
 		Parser parsePage = new Parser(url, book);
 		parsePage.run();
-		Pdf pdf = new Pdf(book, saveFolder);
+		Pdf pdf = new Pdf(book, saveFolder, merge);
 
 		pdf.download(delTmpPdfs);
 		try {
