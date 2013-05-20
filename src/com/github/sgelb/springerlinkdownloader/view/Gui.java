@@ -15,6 +15,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -100,6 +101,8 @@ public class Gui {
 		urlField.setText(Clipboard.getUrlfromClipboard());
 		urlField.getDocument().addDocumentListener(
 				new UrlFieldController(startBtn));
+		String urlToolTip = "Enter book download URL – it ends in »/page/1«";
+		urlField.setToolTipText(urlToolTip);
 		upperArea.add(urlField, c);
 
 		// "save Folder"-Textfield
@@ -123,6 +126,7 @@ public class Gui {
 
 		JButton browseBtn = new JButton("Browse…");
 		browseBtn.addActionListener(new BrowseBtnController(saveFolderLabel));
+		browseBtn.setMnemonic(KeyEvent.VK_B);
 		upperArea.add(browseBtn, c);
 
 		frame.add(upperArea, BorderLayout.CENTER);
@@ -130,11 +134,14 @@ public class Gui {
 		// LOWER AREA
 
 		JButton cancelBtn = new JButton("Cancel");
+		cancelBtn.setMnemonic(KeyEvent.VK_C);
+		
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
+		startBtn.setMnemonic(KeyEvent.VK_S);
+		
 		StartCancelBtnController startCancelBtnController;
 		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(urlField,
 				saveFolderLabel, progressText, progressBar, startBtn, browseBtn, cancelBtn)));
-
 		cancelBtn.addActionListener(startCancelBtnController);
 		
 		lowerArea.add(cancelBtn);

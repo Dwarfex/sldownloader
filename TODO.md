@@ -1,6 +1,5 @@
 ### a list of thing to do
 
-- add ToolTips to everything.
 - re-design GUI according to Gnome Human Interface Guidelines
 
 - sane exception handling in CLI
