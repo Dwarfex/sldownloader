@@ -14,6 +14,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
+import com.github.sgelb.springerlinkdownloader.helper.GuiErrorMessage;
+import com.github.sgelb.springerlinkdownloader.helper.NoAccessException;
 import com.github.sgelb.springerlinkdownloader.model.Book;
 import com.github.sgelb.springerlinkdownloader.model.Parser;
 import com.github.sgelb.springerlinkdownloader.model.Pdf;
@@ -43,7 +45,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 		this.browseBtn = browseBtn;
 	}
 
-	protected Void doInBackground() throws Exception {
+	protected Void doInBackground() {
 		if (!isCancelled()) {
 			browseBtn.setEnabled(false);
 			startBtn.setEnabled(false);
@@ -51,9 +53,15 @@ public class Worker extends SwingWorker<Void, Integer> {
 
 			progressText.setText("Parsing page…");
 			progressBar.setIndeterminate(true);
-			
+
 			Parser parsePage = new Parser(urlField.getText(), book);
-			parsePage.run();
+			try {
+				parsePage.parseHtml();
+				parsePage.setBookData();
+			} catch (NoAccessException | IOException e) {
+				GuiErrorMessage.show(this, progressBar, e);
+			}
+
 			chapters = book.getChapters();
 		}
 
@@ -62,13 +70,22 @@ public class Worker extends SwingWorker<Void, Integer> {
 			progressBar.setIndeterminate(false);
 			progressBar.setMaximum(chapters.size());
 
-			pdf = new Pdf(book, saveFolder);
+			try {
+				pdf = new Pdf(book, saveFolder);
+			} catch (IOException e) {
+				GuiErrorMessage.show(this, progressBar, e);
+			}
 			Integer count = 1;
 			for (Entry<String, URL> chapter : chapters.entrySet()) {
 				if (!isCancelled()) {
-					pdf.download(chapter);
+					try {
+						pdf.download(chapter);
+					} catch (IOException e) {
+						GuiErrorMessage.show(this, progressBar, e);
+					}
 				}
-				progressBar.setString("[" + count + "/" + chapters.size() + "]");
+				progressBar
+						.setString("[" + count + "/" + chapters.size() + "]");
 				progressBar.setValue(count++);
 			}
 			progressBar.setString("");
@@ -79,10 +96,10 @@ public class Worker extends SwingWorker<Void, Integer> {
 			try {
 				pdf.create();
 			} catch (DocumentException | IOException e) {
-				e.printStackTrace();
+				GuiErrorMessage.show(this, progressBar, e);
 			}
 		}
-		
+
 		if (isCancelled()) {
 			progressText.setText("Cancelled.");
 			progressBar.setValue(0);
@@ -93,9 +110,9 @@ public class Worker extends SwingWorker<Void, Integer> {
 				}
 			}
 		} else {
-			progressText.setText("Created " + book.getInfo("saveFile")+ ".");
+			progressText.setText("Created " + book.getInfo("saveFile") + ".");
 		}
-		
+
 		progressBar.setIndeterminate(false);
 		browseBtn.setEnabled(true);
 		startBtn.setEnabled(true);
@@ -109,7 +126,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 			super.get();
 		} catch (CancellationException e) {
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			GuiErrorMessage.show(this, progressBar, e);
 		}
 	}
 

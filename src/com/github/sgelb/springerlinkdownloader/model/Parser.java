@@ -11,7 +11,6 @@
 package com.github.sgelb.springerlinkdownloader.model;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -25,6 +24,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.github.sgelb.springerlinkdownloader.helper.NoAccessException;
 
 public class Parser {
 	private String url;
@@ -43,47 +44,28 @@ public class Parser {
 		this.urlBase = url + "/page/";
 	}
 
-	public void run() {
-		parseHtml();
-		setBookData();
-	}
+	public void parseHtml() throws NoAccessException, HttpStatusException,
+			IOException {
 
-	public void parseHtml() {
-
-		try {
-			Connection con = Jsoup.connect(url);
-			con.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
-			doc = con.timeout(5000).get();
-		} catch (HttpStatusException e) {
-			System.out.println("Error: " + e.getStatusCode());
-			System.exit(-1);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		Connection con = Jsoup.connect(url);
+		con.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
+		doc = con.timeout(5000).get();
 
 		if (!doc.getElementsByClass("access-link").isEmpty()) {
-			System.out
-					.println("You have no access to this book. Are you connecting from the right network?");
-			System.exit(-1);
+			throw new NoAccessException();
 		}
 
-		Integer totalPages = 1;
+		Integer totalPages;
 		try {
 			totalPages = Integer.parseInt(doc
 					.getElementsByClass("number-of-pages").first().text());
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
+			totalPages = 1;
 		}
-
-		getChapters(chapters);
 
 		for (int i = 2; i <= totalPages; i++) {
 			url = urlBase + i;
-			try {
-				doc = Jsoup.connect(url).timeout(5000).get();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			doc = Jsoup.connect(url).timeout(5000).get();
 			chapters.putAll(getChapters(chapters));
 		}
 	}
@@ -105,33 +87,34 @@ public class Parser {
 				book.setInfo(cssId.getKey(), text);
 			}
 		}
-		
+
 		Elements authorElements = summary.getElementsByClass("person");
 		if (!authorElements.isEmpty()) {
 			String author = null;
-			for ( Element authorElement : authorElements) {
+			for (Element authorElement : authorElements) {
 				if (author == null) {
 					author = authorElement.text();
 					continue;
 				}
-				author += ", " + authorElement.text(); 
+				author += ", " + authorElement.text();
 			}
 			book.setInfo("author", author);
 		}
-		
 
 		book.setInfo("url", url);
 		book.setChapters(chapters);
 	}
 
-	public TreeMap<String, URL> getChapters(TreeMap<String, URL> chapters) {
+	public TreeMap<String, URL> getChapters(TreeMap<String, URL> chapters)
+			throws IOException {
+
 		Elements items = doc.getElementsByClass("toc-item");
 
 		for (Element item : items) {
 			String pageString = item.getElementsByClass("page-range").first()
 					.text();
-			Matcher matcher = Pattern.compile("\\d+|[MDCLXVI]", Pattern.CASE_INSENSITIVE).matcher(
-					pageString);
+			Matcher matcher = Pattern.compile("\\d+|[MDCLXVI]",
+					Pattern.CASE_INSENSITIVE).matcher(pageString);
 
 			String page = null;
 			int count = 1;
@@ -146,12 +129,8 @@ public class Parser {
 			}
 
 			URL pdfUrl = null;
-			try {
-				pdfUrl = new URL(item.select("a[href$=.pdf]").first()
-						.attr("abs:href"));
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
+			pdfUrl = new URL(item.select("a[href$=.pdf]").first()
+					.attr("abs:href"));
 			chapters.put(page, pdfUrl);
 		}
 		return chapters;

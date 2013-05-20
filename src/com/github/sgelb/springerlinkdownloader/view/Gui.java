@@ -27,6 +27,7 @@ public class Gui {
 
 	public void run() {
 		JFrame frame = new JFrame("SpringerLink Downloader");
+		frame.setLocationByPlatform(true);
 		frame.setLayout(new BorderLayout());
 
 		JPanel upperArea = new JPanel();

@@ -10,12 +10,10 @@
  ******************************************************************************/
 package com.github.sgelb.springerlinkdownloader.model;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -30,57 +28,44 @@ import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.SimpleBookmark;
 
-
 public class Pdf {
 	private Book book;
 	private TreeMap<String, URL> chapters = new TreeMap<>();
 	private File saveFolder;
 	private ArrayList<File> src = new ArrayList<>();
 	private File tmpDir;
-	
-	public Pdf(Book book, File saveFolder) {
+
+	public Pdf(Book book, File saveFolder) throws IOException {
 		this.book = book;
 		this.chapters = book.getChapters();
 		this.saveFolder = saveFolder;
-		try {
-			tmpDir = Files.createTempDirectory(null).toFile();
-			tmpDir.deleteOnExit();
-		} catch (IOException e) {
-			e.printStackTrace();
-		};
+		tmpDir = Files.createTempDirectory(null).toFile();
+		tmpDir.deleteOnExit();
 	}
 
-	public void download(Entry<String, URL> chapter) {
-		try {
-			URL url = chapter.getValue();
-			url.openConnection();
-			InputStream reader = url.openStream();
-			
-			File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf", tmpDir);
-			tmpPdfFile.deleteOnExit();
-			
-			FileOutputStream writer = new FileOutputStream(tmpPdfFile);
-			byte[] buffer = new byte[131072];
-			int bytesRead = 0;
+	public void download(Entry<String, URL> chapter) throws IOException {
+		URL url = chapter.getValue();
+		url.openConnection();
+		InputStream reader = url.openStream();
 
-			while ((bytesRead = reader.read(buffer)) > 0) {
-				writer.write(buffer, 0, bytesRead);
-				buffer = new byte[131071];
-			}
-			writer.close();
-			reader.close();
+		File tmpPdfFile = File.createTempFile(chapter.getKey(), ".pdf", tmpDir);
+		tmpPdfFile.deleteOnExit();
 
-			src.add(tmpPdfFile);
-		} catch (MalformedURLException e) {
-			System.out.println(" failed.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println(" failed.");
-			e.printStackTrace();
+		FileOutputStream writer = new FileOutputStream(tmpPdfFile);
+		byte[] buffer = new byte[131072];
+		int bytesRead = 0;
+
+		while ((bytesRead = reader.read(buffer)) > 0) {
+			writer.write(buffer, 0, bytesRead);
+			buffer = new byte[131071];
 		}
+		writer.close();
+		reader.close();
+
+		src.add(tmpPdfFile);
 	}
-	
-	public void downloadAll() {
+
+	public void downloadAll() throws IOException {
 		int count = 1;
 		System.out.println("Start downloading…");
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
@@ -91,7 +76,7 @@ public class Pdf {
 	}
 
 	public void create() throws DocumentException, IOException {
-		// TODO: refactor to merge(), mergeAll() 
+		// TODO: refactor to merge(), mergeAll()
 		String title = book.getPdfTitle() + ".pdf";
 		File saveFile = new File(saveFolder, title);
 
@@ -118,8 +103,9 @@ public class Pdf {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
+				// workaround to catch worker.cancel()
 			}
-			
+
 			System.out.print(":: " + count++ + "/" + src.size());
 			reader = new PdfReader(srcPdf.toString());
 
@@ -138,15 +124,18 @@ public class Pdf {
 
 		}
 		destPdf.setOutlines(bookmarks);
-		
-		if (book.getInfo("author") != null) document.addAuthor(book.getInfo("author"));
-		if (book.getInfo("title") != null) document.addTitle(book.getInfo("title"));
-		if (book.getInfo("subtitle") != null) document.addSubject(book.getInfo("subtitle"));
+
+		if (book.getInfo("author") != null)
+			document.addAuthor(book.getInfo("author"));
+		if (book.getInfo("title") != null)
+			document.addTitle(book.getInfo("title"));
+		if (book.getInfo("subtitle") != null)
+			document.addSubject(book.getInfo("subtitle"));
 		document.close();
 
 		System.out.println("Merge complete. Saved to " + saveFile);
 	}
-	
+
 	public void deleteTemp() {
 		for (File srcPdf : src) {
 			if (srcPdf.exists()) srcPdf.delete();

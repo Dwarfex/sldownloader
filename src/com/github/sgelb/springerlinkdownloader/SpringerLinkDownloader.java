@@ -16,7 +16,10 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import org.jsoup.HttpStatusException;
+
 import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
+import com.github.sgelb.springerlinkdownloader.helper.NoAccessException;
 import com.github.sgelb.springerlinkdownloader.model.Book;
 import com.github.sgelb.springerlinkdownloader.model.Parser;
 import com.github.sgelb.springerlinkdownloader.model.Pdf;
@@ -25,7 +28,7 @@ import com.itextpdf.text.DocumentException;
 
 public class SpringerLinkDownloader {
 
-	public void runCLI() {
+	public void runCLI() throws NoAccessException {
 
 		// url to book
 		// http://link.springer.com/book/${doi}/[page/1]
@@ -65,10 +68,33 @@ public class SpringerLinkDownloader {
 
 		Book book = new Book();
 		Parser parsePage = new Parser(url, book);
-		parsePage.run();
-		Pdf pdf = new Pdf(book, saveFolder);
+		try {
+			parsePage.parseHtml();
+		} catch (NoAccessException e) {
+			System.out.println("You have no access to this book.");
+			System.exit(-1);
+		} catch (HttpStatusException e) {
+			System.out.println("Error: " +  e.getStatusCode());
+			System.exit(-1);
+		} catch (IOException e) {
+			System.out.println("Error: " +  e.getStackTrace());
+			System.exit(-1);
+		}
+		
+		parsePage.setBookData();
+		Pdf pdf = null;
+		try {
+			pdf = new Pdf(book, saveFolder);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-		pdf.downloadAll();
+		try {
+			pdf.downloadAll();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		try {
 			pdf.create();
 		} catch (DocumentException | IOException e) {
