@@ -35,9 +35,6 @@ import com.github.sgelb.springerlinkdownloader.helper.RegEx;
 
 public class Gui {
 
-	private int textFieldWidth = 40;
-	private JButton startBtn = new JButton("Start");
-
 	public void run() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -53,6 +50,9 @@ public class Gui {
 
 		JPanel lowerArea = new JPanel();
 		lowerArea.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		int textFieldWidth = 40;
+		JButton startBtn = new JButton("Start");
 
 		// UPPER AREA
 
@@ -143,7 +143,6 @@ public class Gui {
 
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.setMnemonic(KeyEvent.VK_C);
-
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
 		startBtn.setMnemonic(KeyEvent.VK_S);
 
@@ -158,11 +157,11 @@ public class Gui {
 
 		frame.add(lowerArea, BorderLayout.SOUTH);
 
-		// ////
+		//////
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
-		frame.setMinimumSize(upperArea.getPreferredSize());
+		frame.setMinimumSize(frame.getPreferredSize());
 		frame.setVisible(true);
 	}
 
