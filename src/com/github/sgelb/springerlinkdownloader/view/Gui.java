@@ -24,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.github.sgelb.springerlinkdownloader.controller.BrowseBtnController;
 import com.github.sgelb.springerlinkdownloader.controller.StartCancelBtnController;
@@ -37,6 +39,11 @@ public class Gui {
 	private JButton startBtn = new JButton("Start");
 
 	public void run() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+		}
 		JFrame frame = new JFrame("SpringerLink Downloader");
 		frame.setLocationByPlatform(true);
 		frame.setLayout(new BorderLayout());
@@ -78,7 +85,8 @@ public class Gui {
 
 		// "Progress"-Label
 		c.gridy = 3;
-		JLabel progressText = new JLabel("Enter URL, select save folder and press »Start«");
+		JLabel progressText = new JLabel(
+				"Enter URL, select save folder and press »Start«");
 		upperArea.add(progressText, c);
 
 		// Progressbar
@@ -135,15 +143,16 @@ public class Gui {
 
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.setMnemonic(KeyEvent.VK_C);
-		
+
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
 		startBtn.setMnemonic(KeyEvent.VK_S);
-		
+
 		StartCancelBtnController startCancelBtnController;
-		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(urlField,
-				saveFolderLabel, progressText, progressBar, startBtn, browseBtn, cancelBtn)));
+		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(
+				urlField, saveFolderLabel, progressText, progressBar, startBtn,
+				browseBtn, cancelBtn)));
 		cancelBtn.addActionListener(startCancelBtnController);
-		
+
 		lowerArea.add(cancelBtn);
 		lowerArea.add(startBtn);
 
