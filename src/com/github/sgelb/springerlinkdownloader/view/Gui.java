@@ -86,7 +86,8 @@ public class Gui {
 		// "Progress"-Label
 		c.gridy = 3;
 		JLabel progressText = new JLabel(
-				"Enter URL, select save folder and press »Start«");
+				"Not started yet…"); //Enter URL, select save folder and press »Start«");
+		progressText.setEnabled(false);
 		upperArea.add(progressText, c);
 
 		// Progressbar
@@ -95,10 +96,6 @@ public class Gui {
 		progressBar.setStringPainted(true);
 		progressBar.setString("");
 		upperArea.add(progressBar, c);
-
-		// Separator
-		c.gridy = 5;
-		upperArea.add(new JSeparator(), c);
 
 		// COLUMN 1
 
@@ -109,7 +106,7 @@ public class Gui {
 		urlField.setText(Clipboard.getUrlfromClipboard());
 		urlField.getDocument().addDocumentListener(
 				new UrlFieldController(startBtn));
-		String urlToolTip = "Enter book download URL – it ends in »/page/1«";
+		String urlToolTip = "Enter book download URL – it's the one ending in »/page/1«";
 		urlField.setToolTipText(urlToolTip);
 		upperArea.add(urlField, c);
 

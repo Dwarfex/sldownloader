@@ -61,6 +61,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 			startBtn.setEnabled(false);
 			urlField.setEditable(false);
 
+			progressText.setEnabled(true);
 			progressText.setText("Parsing page…");
 			progressBar.setIndeterminate(true);
 
