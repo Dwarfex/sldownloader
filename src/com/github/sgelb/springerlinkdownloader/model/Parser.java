@@ -63,8 +63,11 @@ public class Parser {
 			totalPages = 1;
 		}
 
+		getChapters(chapters);
+		
 		for (int i = 2; i <= totalPages; i++) {
 			url = urlBase + i;
+			System.out.println(url);
 			doc = Jsoup.connect(url).timeout(5000).get();
 			chapters.putAll(getChapters(chapters));
 		}
