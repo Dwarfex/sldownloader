@@ -62,7 +62,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 			urlField.setEditable(false);
 
 			progressText.setEnabled(true);
-			progressText.setText("Parsing page…");
+			progressText.setText("Parsing page\u2026");
 			progressBar.setIndeterminate(true);
 
 			Parser parsePage = new Parser(urlField.getText(), book);
@@ -77,7 +77,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 		}
 
 		if (!isCancelled()) {
-			progressText.setText("Downloading files…");
+			progressText.setText("Downloading files\u2026");
 			progressBar.setIndeterminate(false);
 			progressBar.setMaximum(chapters.size());
 
@@ -103,7 +103,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 		}
 
 		if (!isCancelled()) {
-			progressText.setText("Merging files…");
+			progressText.setText("Merging files\u2026");
 			try {
 				pdf.create();
 			} catch (DocumentException | IOException e) {
@@ -122,6 +122,7 @@ public class Worker extends SwingWorker<Void, Integer> {
 			}
 		} else {
 			progressText.setText("Created " + book.getInfo("saveFile") + ".");
+			progressText.setToolTipText(book.getInfo("saveFile"));
 		}
 
 		progressBar.setIndeterminate(false);

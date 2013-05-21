@@ -86,7 +86,7 @@ public class Gui {
 		// "Progress"-Label
 		c.gridy = 3;
 		JLabel progressText = new JLabel(
-				"Not started yet…"); //Enter URL, select save folder and press »Start«");
+				"Not started yet\u2026"); //Enter URL, select save folder and press »Start«");
 		progressText.setEnabled(false);
 		upperArea.add(progressText, c);
 
@@ -129,7 +129,7 @@ public class Gui {
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.anchor = GridBagConstraints.EAST;
 
-		JButton browseBtn = new JButton("Browse…");
+		JButton browseBtn = new JButton("Browse\u2026");
 		browseBtn.addActionListener(new BrowseBtnController(saveFolderLabel));
 		browseBtn.setMnemonic(KeyEvent.VK_B);
 		upperArea.add(browseBtn, c);
