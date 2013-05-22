@@ -56,25 +56,23 @@ public class Worker extends SwingWorker<Void, Integer> {
 	}
 
 	protected Void doInBackground() {
-		if (!isCancelled()) {
-			browseBtn.setEnabled(false);
-			startBtn.setEnabled(false);
-			urlField.setEditable(false);
+		browseBtn.setEnabled(false);
+		startBtn.setEnabled(false);
+		urlField.setEditable(false);
 
-			progressText.setEnabled(true);
-			progressText.setText("Parsing page\u2026");
-			progressBar.setIndeterminate(true);
+		progressBar.setIndeterminate(true);
+		progressText.setEnabled(true);
+		progressText.setText("Parsing page\u2026");
+		progressText.setToolTipText(null);
 
-			Parser parsePage = new Parser(urlField.getText(), book);
-			try {
-				parsePage.parseHtml();
-				parsePage.setBookData();
-			} catch (NoAccessException | IOException e) {
-				GuiErrorMessage.show(this, progressBar, e);
-			}
-
-			chapters = book.getChapters();
+		Parser parsePage = new Parser(urlField.getText(), book);
+		try {
+			parsePage.parseHtml();
+			parsePage.setBookData();
+		} catch (NoAccessException | IOException e) {
+			GuiErrorMessage.show(this, progressBar, e);
 		}
+		chapters = book.getChapters();
 
 		if (!isCancelled()) {
 			progressText.setText("Downloading files\u2026");
@@ -99,13 +97,13 @@ public class Worker extends SwingWorker<Void, Integer> {
 						.setString("[" + count + "/" + chapters.size() + "]");
 				progressBar.setValue(count++);
 			}
-			progressBar.setString("");
+			progressBar.setString(null);
 		}
 
 		if (!isCancelled()) {
 			progressText.setText("Merging files\u2026");
 			try {
-				pdf.create();
+				pdf.mergePdfs();
 			} catch (DocumentException | IOException e) {
 				GuiErrorMessage.show(this, progressBar, e);
 			}

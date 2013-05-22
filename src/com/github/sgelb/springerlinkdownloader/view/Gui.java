@@ -34,6 +34,13 @@ import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
 import com.github.sgelb.springerlinkdownloader.helper.RegEx;
 
 public class Gui {
+	
+	private JButton startBtn;
+	private JButton browseBtn;
+	private JTextField urlField;
+	private JLabel progressText;
+	private JProgressBar progressBar;
+	private int textFieldWidth;
 
 	public void run() {
 		try {
@@ -51,8 +58,7 @@ public class Gui {
 		JPanel lowerArea = new JPanel();
 		lowerArea.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
-		int textFieldWidth = 40;
-		JButton startBtn = new JButton("Start");
+		textFieldWidth = 40;
 
 		// UPPER AREA
 
@@ -67,11 +73,11 @@ public class Gui {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_START;
-		upperArea.add(new JLabel("URL: "), c);
+		upperArea.add(new JLabel("URL of book: "), c);
 
 		// "Save folder"-Label
 		c.gridy = 1;
-		upperArea.add(new JLabel("Save folder: "), c);
+		upperArea.add(new JLabel("Save PDF to: "), c);
 
 		// Separator
 		c = new GridBagConstraints();
@@ -85,14 +91,14 @@ public class Gui {
 
 		// "Progress"-Label
 		c.gridy = 3;
-		JLabel progressText = new JLabel(
-				"Not started yet\u2026"); //Enter URL, select save folder and press »Start«");
+		progressText = new JLabel(
+				"Not started yet\u2026");
 		progressText.setEnabled(false);
 		upperArea.add(progressText, c);
 
 		// Progressbar
 		c.gridy = 4;
-		JProgressBar progressBar = new JProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		progressBar.setString("");
 		upperArea.add(progressBar, c);
@@ -102,11 +108,11 @@ public class Gui {
 		// "URL"-Textfield
 		c.gridx = 1;
 		c.gridy = 0;
-		JTextField urlField = new JTextField(textFieldWidth);
+		urlField = new JTextField(textFieldWidth);
 		urlField.setText(Clipboard.getUrlfromClipboard());
 		urlField.getDocument().addDocumentListener(
 				new UrlFieldController(startBtn));
-		String urlToolTip = "Enter book download URL – it's the one ending in »/page/1«";
+		String urlToolTip = "Enter book download URL - it's the one ending in �/page/1�";
 		urlField.setToolTipText(urlToolTip);
 		upperArea.add(urlField, c);
 
@@ -129,7 +135,7 @@ public class Gui {
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.anchor = GridBagConstraints.EAST;
 
-		JButton browseBtn = new JButton("Browse\u2026");
+		browseBtn = new JButton("Browse\u2026");
 		browseBtn.addActionListener(new BrowseBtnController(saveFolderLabel));
 		browseBtn.setMnemonic(KeyEvent.VK_B);
 		upperArea.add(browseBtn, c);
@@ -140,6 +146,8 @@ public class Gui {
 
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.setMnemonic(KeyEvent.VK_C);
+		
+		startBtn = new JButton("Start");
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
 		startBtn.setMnemonic(KeyEvent.VK_S);
 

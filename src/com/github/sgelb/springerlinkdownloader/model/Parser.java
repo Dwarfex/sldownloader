@@ -18,7 +18,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,9 +46,7 @@ public class Parser {
 	public void parseHtml() throws NoAccessException, HttpStatusException,
 			IOException {
 
-		Connection con = Jsoup.connect(url);
-		con.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
-		doc = con.timeout(5000).get();
+		doc = Jsoup.connect(url).timeout(5000).get();
 
 		if (!doc.getElementsByClass("access-link").isEmpty()) {
 			throw new NoAccessException();
@@ -64,7 +61,6 @@ public class Parser {
 		}
 
 		getChapters(chapters);
-		
 		for (int i = 2; i <= totalPages; i++) {
 			url = urlBase + i;
 			System.out.println(url);
@@ -79,10 +75,10 @@ public class Parser {
 		// <key name, css id name>
 		cssIds.put("title", "abstract-about-title");
 		cssIds.put("subtitle", "abstract-about-book-subtitle");
-		cssIds.put("year", "abstract-about-book-chapter-copyright-year");
-		cssIds.put("doi", "abstract-about-book-chapter-doi");
-		cssIds.put("printIsbn", "abstract-about-book-print-isbn");
-		cssIds.put("onlineIsbn", "abstract-about-book-online-isbn");
+		//cssIds.put("year", "abstract-about-book-chapter-copyright-year");
+		//cssIds.put("doi", "abstract-about-book-chapter-doi");
+		//cssIds.put("printIsbn", "abstract-about-book-print-isbn");
+		//cssIds.put("onlineIsbn", "abstract-about-book-online-isbn");
 
 		for (Entry<String, String> cssId : cssIds.entrySet()) {
 			String text = summary.getElementById(cssId.getValue()).text();

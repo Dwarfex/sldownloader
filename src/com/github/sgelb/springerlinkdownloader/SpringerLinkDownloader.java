@@ -12,14 +12,18 @@ package com.github.sgelb.springerlinkdownloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.jsoup.HttpStatusException;
 
-import com.github.sgelb.springerlinkdownloader.helper.Clipboard;
 import com.github.sgelb.springerlinkdownloader.helper.NoAccessException;
+import com.github.sgelb.springerlinkdownloader.helper.RegEx;
 import com.github.sgelb.springerlinkdownloader.model.Book;
 import com.github.sgelb.springerlinkdownloader.model.Parser;
 import com.github.sgelb.springerlinkdownloader.model.Pdf;
@@ -28,76 +32,80 @@ import com.itextpdf.text.DocumentException;
 
 public class SpringerLinkDownloader {
 
-	public void runCLI() throws NoAccessException {
+	// Example url:
+	// "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
 
-		// url to book
-		// http://link.springer.com/book/${doi}/[page/1]
-		// doi = ${prefix}/${onlineISBN}
-		// /page/1 is optional
-		// String url =
-		// "http://link.springer.com/book/10.1007/978-3-8348-9931-6";
+	public void runCLI(String[] args) {
 
-		// English book - no access
-		// String url =
-		// "http://link.springer.com/book/10.1007/978-3-642-32405-5"
-		
-		String url = Clipboard.getUrlfromClipboard();
-		File saveFolder = new File(System.getProperty("user.home"));
+		// get command line options
+		Options options = new Options();
 
-		// begin menu
+		options.addOption("g", "gui", false, "start GUI");
+		options.addOption("u", "url", true, "Url");
+		options.addOption("o", "output", true, "save folder [default: $home]");
 
-		System.out.println("SpringerLink Downloader");
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Enter url:");
-		if (url != null) {
-			System.out.print("[" + url + "]\n> ");
-		} else {
-			System.out.print("> ");
+		CommandLineParser parser = new BasicParser();
+
+		if (args.length == 0) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("SpringerLinkDownloader", options, true);
+			return;
 		}
-		String tmp = scanner.nextLine().trim();
-		if (!tmp.isEmpty()) url = tmp;
 
-		System.out.print("Enter save folder ["
-				+ System.getProperty("user.home") + "]\n> ");
-		tmp = scanner.nextLine().trim();
-		if (!tmp.isEmpty()) saveFolder = new File(tmp);
+		CommandLine cmdline = null;
+		try {
+			cmdline = parser.parse(options, args);
+		} catch (org.apache.commons.cli.ParseException e) {
+			e.printStackTrace();
+		}
 
-		scanner.close();
+		if (cmdline.hasOption("g")) {
+			runGUI();
+			return;
+		}
 
-		// end menu
+		String url = null;
+		if (cmdline.hasOption("u")
+				&& RegEx.matchUrl(cmdline.getOptionValue("u"))) {
+			url = cmdline.getOptionValue("u");
+		} else {
+			System.out.println("Please use a valid url");
+			System.exit(-1);
+		}
+
+		File saveFolder = new File(System.getProperty("user.home"));
+		if (cmdline.getOptionValue("o") != null) {
+			File tmpFile = new File(cmdline.getOptionValue("o"));
+			if (tmpFile.isDirectory()) {
+				saveFolder = new File(cmdline.getOptionValue("o"));
+			}
+		}
+
+		System.out.println("Download " + url);
+		System.out.println("Save to " + saveFolder);
 
 		Book book = new Book();
 		Parser parsePage = new Parser(url, book);
 		try {
 			parsePage.parseHtml();
 		} catch (NoAccessException e) {
-			System.out.println("You have no access to this book.");
+			System.out.println("You don't have access to this book.");
 			System.exit(-1);
 		} catch (HttpStatusException e) {
-			System.out.println("Error: " +  e.getStatusCode());
+			System.out.println("Error " + e.getStatusCode());
 			System.exit(-1);
 		} catch (IOException e) {
-			System.out.println("Error: " +  e.getStackTrace());
+			System.out.println("Error: " + e.getStackTrace());
 			System.exit(-1);
 		}
-		
+
 		parsePage.setBookData();
 		Pdf pdf = null;
 		try {
 			pdf = new Pdf(book, saveFolder);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		try {
 			pdf.downloadAll();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			pdf.create();
-		} catch (DocumentException | IOException e) {
+			pdf.mergePdfs();
+		} catch (IOException | DocumentException e) {
 			e.printStackTrace();
 		}
 	}
@@ -113,8 +121,11 @@ public class SpringerLinkDownloader {
 
 	public static void main(String[] args) {
 		SpringerLinkDownloader sl = new SpringerLinkDownloader();
-		//sl.runCLI();
-		sl.runGUI();
+		if (System.console() != null) { // started from console
+			sl.runCLI(args);
+		} else {
+			sl.runGUI();
+		}
 	}
 
 }

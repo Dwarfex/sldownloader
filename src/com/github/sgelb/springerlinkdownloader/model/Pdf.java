@@ -67,16 +67,15 @@ public class Pdf {
 
 	public void downloadAll() throws IOException {
 		int count = 1;
-		System.out.println("Start downloading…");
+		System.out.println("Start downloading\u2026");
 		for (Entry<String, URL> chapter : chapters.entrySet()) {
 			System.out.print(":: " + count++ + "/" + chapters.size());
 			download(chapter);
 			System.out.println(" succeed.");
 		}
 	}
-
-	public void create() throws DocumentException, IOException {
-		// TODO: refactor to merge(), mergeAll()
+	
+	public void mergePdfs() throws DocumentException, IOException {
 		String title = book.getPdfTitle() + ".pdf";
 		File saveFile = new File(saveFolder, title);
 
@@ -97,15 +96,13 @@ public class Pdf {
 		List<HashMap<String, Object>> tmp;
 
 		count = 1;
-		System.out.println("Start mergin…");
+		System.out.println("Start mergin\u2026");
 		for (File srcPdf : src) {
-
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// workaround to catch worker.cancel()
+			
+			if (Thread.interrupted()) {
+			    return;
 			}
-
+			
 			System.out.print(":: " + count++ + "/" + src.size());
 			reader = new PdfReader(srcPdf.toString());
 
@@ -121,7 +118,6 @@ public class Pdf {
 			destPdf.freeReader(reader);
 			reader.close();
 			System.out.println(" succeed.");
-
 		}
 		destPdf.setOutlines(bookmarks);
 
@@ -138,8 +134,10 @@ public class Pdf {
 
 	public void deleteTemp() {
 		for (File srcPdf : src) {
-			if (srcPdf.exists()) srcPdf.delete();
+			if (srcPdf.exists())
+				srcPdf.delete();
 		}
-		if (tmpDir.exists()) tmpDir.delete();
+		if (tmpDir.exists())
+			tmpDir.delete();
 	}
 }

@@ -20,6 +20,7 @@ public class SaveFolderDialog {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setCurrentDirectory(new File(startFolder));
+		jfc.setDialogTitle("Save PDF to\u2026");
 		int response = jfc.showOpenDialog(null);
 		if (response == JFileChooser.APPROVE_OPTION) {
 			return new File(jfc.getSelectedFile().getAbsolutePath());
