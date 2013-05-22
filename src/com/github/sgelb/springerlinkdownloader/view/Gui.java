@@ -110,9 +110,8 @@ public class Gui {
 		c.gridy = 0;
 		urlField = new JTextField(textFieldWidth);
 		urlField.setText(Clipboard.getUrlfromClipboard());
-		urlField.getDocument().addDocumentListener(
-				new UrlFieldController(startBtn));
-		String urlToolTip = "Enter book download URL - it's the one ending in »/page/1«";
+		
+		String urlToolTip = "Enter book download URL - it's the one ending in ï¿½/page/1ï¿½";
 		urlField.setToolTipText(urlToolTip);
 		upperArea.add(urlField, c);
 
@@ -151,17 +150,21 @@ public class Gui {
 		startBtn.setEnabled(RegEx.matchUrl(urlField.getText()));
 		startBtn.setMnemonic(KeyEvent.VK_S);
 
-		StartCancelBtnController startCancelBtnController;
-		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(
-				urlField, saveFolderLabel, progressText, progressBar, startBtn,
-				browseBtn, cancelBtn)));
-		cancelBtn.addActionListener(startCancelBtnController);
-
 		lowerArea.add(cancelBtn);
 		lowerArea.add(startBtn);
 
 		frame.add(lowerArea, BorderLayout.SOUTH);
 
+		////// add Listener/Controller
+		
+		urlField.getDocument().addDocumentListener(
+				new UrlFieldController(startBtn));
+		StartCancelBtnController startCancelBtnController;
+		startBtn.addActionListener((startCancelBtnController = new StartCancelBtnController(
+				urlField, saveFolderLabel, progressText, progressBar, startBtn,
+				browseBtn, cancelBtn)));
+		cancelBtn.addActionListener(startCancelBtnController);
+		
 		//////
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
