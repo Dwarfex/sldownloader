@@ -43,7 +43,7 @@ public class Parser {
 	public void parseHtml() throws NoAccessException, HttpStatusException,
 			IOException {
 
-		doc = Jsoup.connect(url).timeout(5000).get();
+		doc = Jsoup.connect(url).timeout(15000).get();
 
 		if (!doc.getElementsByClass("access-link").isEmpty()) {
 			throw new NoAccessException();
@@ -61,7 +61,7 @@ public class Parser {
 		for (int i = 2; i <= totalPages; i++) {
 			url = urlBase + i;
 			System.out.println(url);
-			doc = Jsoup.connect(url).timeout(5000).get();
+			doc = Jsoup.connect(url).timeout(15000).get();
 			chapters.putAll(getChapters(chapters));
 		}
 	}

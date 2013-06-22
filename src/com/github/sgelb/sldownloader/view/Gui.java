@@ -108,7 +108,7 @@ public class Gui {
 		urlField = new JTextField(textFieldWidth);
 		urlField.setText(Clipboard.getUrlfromClipboard());
 		
-		String urlToolTip = "Enter book download URL - it's the one ending in �/page/1�";
+		String urlToolTip = "Enter book download URL - it's the one ending in /page/1";
 		urlField.setToolTipText(urlToolTip);
 		upperArea.add(urlField, c);
 
